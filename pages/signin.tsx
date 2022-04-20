@@ -1,9 +1,11 @@
 import { User } from "firebase/auth";
 import type { NextPage } from "next";
+import { ReactElement } from "react";
+import Layout from "../containers/Layout";
 import { signInGoogle, signOutNow } from "../services/sign";
 import { addUser, getUser } from "../services/user";
 
-const SignIn: NextPage = () => {
+export default function SignIn() {
   const signIn = () => {
     signInGoogle().then(({ displayName, email, uid, photoURL }: User) => {
       getUser(uid).then((userInfo) => {
@@ -28,7 +30,7 @@ const SignIn: NextPage = () => {
   };
 
   return (
-    <div className="bg-gray-50 h-screen w-screen flex items-center justify-center gap-3">
+    <div className="flex items-center justify-center gap-3 py-12">
       <button
         onClick={signIn}
         type="button"
@@ -78,6 +80,8 @@ const SignIn: NextPage = () => {
       </button>
     </div>
   );
-};
+}
 
-export default SignIn;
+SignIn.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getUser, IUser } from "../services/user";
+import Img from "./Img";
 
 interface IAvatar {
   uid: string;
@@ -26,11 +27,17 @@ export default function Avatar({ uid }: IAvatar) {
 
   return (
     <div className="flex items-center">
-      <img
-        className="inline-block h-8 w-8 rounded-full"
-        src={info.photoURL}
-        alt=""
-      />
+      <div className="inline-block h-8 w-8">
+        {info.photoURL ? (
+          <Img
+            className="rounded-full"
+            src={info.photoURL}
+            alt={info.displayName}
+            width={150}
+            height={150}
+          />
+        ) : null}
+      </div>
       <div className="ml-3">
         <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
           {info.displayName}

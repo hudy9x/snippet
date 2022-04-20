@@ -6,16 +6,20 @@ import { FileData } from "../services/file";
 import { useAuth } from "../hooks/useAuth";
 import { useFormik } from "formik";
 import { addSnippet } from "../services/snippet";
+import { ReactElement } from "react";
+import Layout from "../containers/Layout";
 
-const Post: NextPage = () => {
+interface IPost {
+  title: string;
+  images: FileData[];
+  tags: string;
+  uid: string;
+}
+
+export default function Post() {
   const { checking, uid } = useAuth();
   const imagePath = `images/${uid}`;
-  const formik = useFormik<{
-    title: string;
-    images: FileData[];
-    tags: string;
-    uid: string;
-  }>({
+  const formik = useFormik<IPost>({
     initialValues: {
       title: "",
       images: [],
@@ -23,7 +27,7 @@ const Post: NextPage = () => {
       uid: "",
     },
 
-    onSubmit: (values) => {
+    onSubmit: (values: IPost) => {
       if (!formik.values.images.length) {
         alert("image required");
         return;
@@ -50,9 +54,12 @@ const Post: NextPage = () => {
   };
 
   return (
-    <div className="h-screen w-screen bg-gray-50 flex items-center justify-center">
+    <div
+      className="flex items-center justify-center"
+      style={{ height: "calc(100vh - 106px)" }}
+    >
       {checking ? "Loading" : ""}
-      <div className="w-96 mx-8 ">
+      <div className="w-96 mx-8">
         <div className="bg-white rounded-md shadow-2xl">
           <h2 className="text-md text-center font-semibold uppercase p-4 bg-gray-50 border-b">
             Post your snippet !
@@ -130,6 +137,8 @@ const Post: NextPage = () => {
       </div>
     </div>
   );
-};
+}
 
-export default Post;
+Post.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
