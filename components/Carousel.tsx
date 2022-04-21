@@ -5,12 +5,20 @@ import { FileData } from "../services/file";
 
 interface ICarousel {
   urls: FileData[];
+  onClickItem?: (index: number) => void;
 }
 
-function Carousel({ urls }: ICarousel) {
+function Carousel({ urls, onClickItem = () => {} }: ICarousel) {
   return (
     <div className="rounded-md shadow-md">
-      <CarouselContainer showThumbs={false} dynamicHeight={true}>
+      <CarouselContainer
+        onClickItem={(index) => {
+          onClickItem(index);
+        }}
+        showThumbs={false}
+        dynamicHeight={true}
+        statusFormatter={(c, t) => (t > 1 ? `${c}/${t}` : "")}
+      >
         {urls.map(({ fullPath, url, height, width }) => {
           return (
             <div key={fullPath}>
@@ -21,8 +29,6 @@ function Carousel({ urls }: ICarousel) {
                 width={width}
                 height={height}
               />
-              {/* <img className="rounded-md" src={url} /> */}
-              {/* <p className="legend">Legend 1</p> */}
             </div>
           );
         })}

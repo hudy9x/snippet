@@ -26,10 +26,17 @@ interface IImgProps {
   alt: string;
   width: number;
   height: number;
+  layout?: "fill" | "fixed" | "raw" | "responsive" | "intrinsic";
 }
 
-function Img({ className, src, alt, width, height }: IImgProps) {
-  console.log(src, alt);
+function Img({
+  className,
+  src,
+  alt,
+  width,
+  height,
+  layout = "responsive",
+}: IImgProps) {
   return (
     <Image
       className={className}
@@ -40,7 +47,7 @@ function Img({ className, src, alt, width, height }: IImgProps) {
         shimmer(width, height)
       )}`}
       priority
-      layout="responsive"
+      layout={layout}
       width={width}
       height={height}
     />

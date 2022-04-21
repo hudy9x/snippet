@@ -10,6 +10,7 @@ const defaultAuth = {
   uid: "",
   photoURL: "",
 };
+
 export const useAuth = () => {
   const [authen, setAuthen] = useState(defaultAuth);
   useEffect(() => {

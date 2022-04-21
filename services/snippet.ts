@@ -43,10 +43,8 @@ export const addSnippet = async ({ title, tags, uid, images }: ISnippet) => {
       uid,
       images,
     });
-    console.log("Document written with ID: ", docRef);
     return docRef;
   } catch (e) {
-    console.error("Error adding document: ", e);
     throw new Error();
   }
 };
