@@ -44,7 +44,12 @@ export default function Post() {
         title: values.title,
         uid,
       }).then((res) => {
-        console.log(res);
+        formik.setValues({
+          images: [],
+          tags: "",
+          title: "",
+          uid: "",
+        });
       });
     },
   });

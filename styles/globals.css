@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url("./react-carousel.css");
 
 html {
   @apply bg-gray-50;
@@ -32,4 +33,11 @@ html {
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to right, #3251cd, #10cb8d);
   background-clip: text;
+}
+
+.snippet-tag {
+  @apply uppercase px-2 py-1 rounded-lg;
+  font-size: 0.6rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
 }

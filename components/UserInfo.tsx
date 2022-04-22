@@ -24,7 +24,7 @@ export default function UserInfo() {
           </div>
         </>
       ) : (
-        <Link href={"/signin"}>Sign-In</Link>
+        <Link href={"/signin"}>Welcome !</Link>
       )}
     </div>
   );
