@@ -17,10 +17,10 @@ const ViewModal = ({ data }: IViewModal) => {
   const view = (
     <div className="fixed h-screen w-screen bg-gray-50 overflow-x-hidden overflow-y-auto z-10 top-0 left-0">
       <div className="w-full md:w-3/4 m-auto p-2 md:py-4 flex items-center">
-        {images.map((img) => {
+        {images.map((img, index) => {
           const { url, height, width } = img;
           return (
-            <div className="w-14 flex items-center">
+            <div key={index} className="w-14 flex items-center">
               <Img
                 className="md:rounded-md"
                 src={url}

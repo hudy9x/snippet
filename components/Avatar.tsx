@@ -23,7 +23,7 @@ export default function Avatar({ uid }: IAvatar) {
         uid: res.uid,
       });
     });
-  }, []);
+  }, [uid]);
 
   return (
     <div className="flex items-center">
