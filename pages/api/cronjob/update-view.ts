@@ -2,27 +2,74 @@ import { NextApiRequest, NextApiResponse } from "next";
 import "../../../libs/firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
 
+interface ISnippetCounter {
+  [key: string]: number;
+}
+
+type FirebaseDoc =
+  FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>;
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const firestore = getFirestore();
-
-  const viewRef = firestore.collection("views");
+  const doc = firestore.doc;
+  const runTransaction = firestore.runTransaction;
+  const viewRef = firestore
+    .collection("views")
+    .where("done", "==", false)
+    .limit(500);
 
   viewRef
     .get()
-    .then((snapshot) => {
-      const dt = [];
-      snapshot.forEach((doc) => {
-        dt.push(doc.data());
-        console.log(doc.id, "=>", doc.data());
+    .then(async (snapshot) => {
+      const counter: ISnippetCounter = {};
+      const snippets: string[] = [];
+
+      snapshot.forEach((d) => {
+        const data = d.data();
+        const snippetId = data.snippetId;
+
+        if (!counter[snippetId]) {
+          snippets.push(snippetId);
+          counter[snippetId] = 0;
+        }
+        counter[snippetId] += 1;
       });
 
-      res.status(200).json({ method: "GET", success: true, datas: dt });
+      // console.log("counter", counter);
+      // console.log("snippets", snippets);
+
+      try {
+        await runTransaction(async (transaction) => {
+          const dt = await transaction.get(doc("views/6LZig56RsFoiyyoiNIYJ"));
+          console.log(dt.data());
+        });
+      } catch (error) {
+        console.log(error);
+      }
+
+      res.status(200).json({ method: "GET", success: true });
+
+      // try {
+      //   await runTransaction(async (transaction) => {
+      //     console.log('111')
+      //     // snippets.forEach(async (snippet) => {
+      //     //   console.log('snippet', snippet)
+      //       // const resDoc = await transaction.get(doc("views", snippet));
+
+      //       // console.log(resDoc.data());
+      //     // });
+      //   });
+      //   res.status(200).json({ method: "GET", success: true });
+      // } catch (error) {
+      //   console.log("error transaction", error);
+      // }
     })
+    .then()
     .catch((err) => {
-      res.status(500).json({ method: "GET", success: true });
+      res.status(500).json({ method: "GET", code: 500, success: false });
     });
 
   // if (req.method === "POST") {

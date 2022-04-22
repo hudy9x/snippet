@@ -17,9 +17,13 @@ function Layout({ children }: ILayoutProp) {
           <h2 className="logo font-semibold">
             <Link href={"/"}>Snippet.dev</Link>
           </h2>
-          <div className="uppercase text-xs">
+          <div className="uppercase text-xs relative group">
             <UserInfo />
-            
+            <div className="absolute group-hover:block hidden top-5 right-0 rounded-md bg-white shadow-md">
+              <div className="whitespace-nowrap px-4 py-2">
+                <Link href={"/signin"}>Log out</Link>
+              </div>
+            </div>
           </div>
         </div>
       </header>

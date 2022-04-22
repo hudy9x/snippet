@@ -10,12 +10,14 @@ export const setView = async (snippetId: string, uid: string) => {
     const d = doc(db, COLLECTION_NAME, key);
 
     if (getCache(key)) {
+      console.log("cached");
       return;
     }
 
-    const isViewed = await getDoc(d);
+    const returnedDoc = await getDoc(d);
 
-    if (isViewed) {
+    if (returnedDoc.data()) {
+      console.log("isViewed");
       setCache(key, "1");
       return;
     }
@@ -24,7 +26,7 @@ export const setView = async (snippetId: string, uid: string) => {
       value: 1,
       uid,
       snippetId,
-      // done: false
+      done: false,
     });
 
     setCache(key, "1");

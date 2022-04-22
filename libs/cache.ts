@@ -1,8 +1,10 @@
-const localStore = window.localStorage;
+const localStore = () => {
+  return window.localStorage
+};
 export const setCache = (name: string, value: unknown) => {
-  localStore.setItem(name, JSON.stringify(value));
+  localStore().setItem(name, JSON.stringify(value));
 };
 
 export const getCache = (name: string) => {
-  return localStore.getItem(name);
+  return localStore().getItem(name);
 };
