@@ -1,13 +1,12 @@
-import type { NextPage } from "next";
 import Link from "next/link";
-import InputUpload from "../components/InputUpload";
-import { FileData } from "../services/file";
+import InputUpload from "../../components/InputUpload";
+import { FileData } from "../../services/file";
 
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 import { useFormik } from "formik";
-import { addSnippet } from "../services/snippet";
+import { addSnippet } from "../../services/snippet";
 import { ReactElement } from "react";
-import Layout from "../containers/Layout";
+import Layout from "../../containers/Layout";
 
 interface IPost {
   title: string;

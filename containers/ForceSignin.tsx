@@ -1,11 +1,54 @@
 import { User } from "firebase/auth";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useAuth } from "../hooks/useAuth";
+import {
+  addRequest,
+  ERequestStatus,
+  ERequestType,
+  sendedPromoteComposerAlready,
+} from "../services/request";
 import { signInGoogle } from "../services/sign";
-import { addUser, getUser } from "../services/user";
+import { addUser, getUser, IUser, IUserRole } from "../services/user";
 
 function ForceSignin() {
+  const [visible, setVisible] = useState(false);
+  const [register, setRegister] = useState(false);
+  const { authen, checking, uid } = useAuth();
+
+  const _addRequest = async (uid: string) => {
+    const isSended = await sendedPromoteComposerAlready(uid);
+
+    setRegister(false);
+
+    if (isSended) {
+      console.log("sended promote composer request already");
+      return;
+    }
+
+    addRequest({
+      createdBy: uid,
+      status: ERequestStatus.WAIT,
+      title: "Request promoting to composer",
+      type: ERequestType.PROMOTE_COMPOSER,
+    });
+  };
+
+  const requestPromoteToComposer = (uid: string, userInfo: IUser | null) => {
+    if (!register) return;
+    if (!userInfo) {
+      _addRequest(uid);
+      return;
+    }
+    if (userInfo.role === IUserRole.COMPOSER) return;
+    _addRequest(userInfo.uid);
+  };
+
   const signIn = () => {
     signInGoogle().then(({ displayName, email, uid, photoURL }: User) => {
       getUser(uid).then((userInfo) => {
+        requestPromoteToComposer(uid, userInfo);
+
         if (userInfo) return;
 
         // ONLY UPDATE IF USER INFOR NOT EXIST
@@ -16,25 +59,50 @@ function ForceSignin() {
           uid,
         });
       });
-      alert("Signed in");
+      // alert("Signed in");
     });
   };
 
+  useEffect(() => {
+    const cls = document.body.classList;
+    if (!checking && !authen && !uid) {
+      setTimeout(() => {
+        cls.add("overflow-body-hidden");
+        setVisible(true);
+      }, 3000);
+    } else {
+      setVisible(false);
+      cls.remove("overflow-body-hidden");
+    }
+  }, [authen, checking, uid]);
+
   return (
-    <div className="fixed top-0 left-0 bg-gray-50 z-20 h-screen w-screen flex items-center justify-center">
-      <img src="./sapiens.svg" />
-      <div className="rounded-lg shadow-lg bg-white w-72 md:w-96 py-10 md:py-12 px-8 md:px-14 flex flex-col justify-center text-center gap-4">
-        <h2 className="font-bold text-xl md:text-2xl pb-2 md:pb-4">
-          Đăng nhập để lướt
+    <div className={`force-sign-in ${visible ? "showup" : ""}`}>
+      <div className={`force-sign-in-form ${visible ? "showup" : ""}`}>
+        <h2 className="font-bold text-xl md:text-2xl pb-2">
+          Đăng nhập để lướt 👻
         </h2>
+
+        <div className="w-64 m-auto">
+          <Image
+            src="/sapiens2.svg"
+            alt="Sign in"
+            width={720}
+            height={640}
+            layout="intrinsic"
+          />
+        </div>
+
         <p className="text-gray-500">
-          Nếu bạn hứng thú với việc chia sẻ những đoạn code ngắn thì hãy tham
-          gia cùng tôi nhé 🍻
+          Nếu hứng thú với việc share những đoạn code thì hãy tham gia cùng tôi
+          nhé 🍻
         </p>
 
         <div className="relative flex items-center justify-center">
           <div className="flex items-center h-5">
             <input
+              checked={register}
+              onChange={() => setRegister(!register)}
               id="comments"
               aria-describedby="comments-description"
               name="comments"
@@ -86,7 +154,7 @@ function ForceSignin() {
               d="M48 48L17 24l-4-3 35-10z"
             />
           </svg>
-          <span>Sign in with Google</span>
+          <span>Đăng nhập qua Google</span>
         </button>
       </div>
     </div>

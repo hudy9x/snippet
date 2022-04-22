@@ -33,7 +33,7 @@ function ViewTracker({ children }: IViewTracker) {
     };
 
     const scrollHandler = (ev: Event) => {
-      console.log("scrolling");
+      // console.log("scrolling");
     };
 
     document.addEventListener("mouseover", mouseEventHandler);
