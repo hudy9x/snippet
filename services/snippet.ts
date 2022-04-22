@@ -1,4 +1,13 @@
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { Timestamp } from "firebase-admin/firestore";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+} from "firebase/firestore";
+import { nowTimeStamp } from "../helpers/date";
 import { db } from "../libs/firebase";
 import { FileData } from "./file";
 
@@ -12,11 +21,13 @@ export interface ISnippet {
   images: FileData[];
   like?: number;
   view?: number;
+  createdAt?: Timestamp;
 }
 
 export const getSnippets = async (): Promise<ISnippet[]> => {
   try {
-    const querySnapshot = await getDocs(collectionSnippet);
+    const q = query(collectionSnippet, orderBy("createdAt", "desc"), limit(25));
+    const querySnapshot = await getDocs(q);
     const snippets: ISnippet[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
@@ -45,6 +56,7 @@ export const addSnippet = async ({ title, tags, uid, images }: ISnippet) => {
       images,
       view: 0,
       like: 0,
+      createdAt: nowTimeStamp(),
     });
     return docRef;
   } catch (e) {
