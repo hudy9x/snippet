@@ -2,6 +2,7 @@ import Link from "next/link";
 import React from "react";
 import UserInfo from "../components/UserInfo";
 import { signOutNow } from "../services/sign";
+import ForceSignin from "./ForceSignin";
 
 interface ILayoutProp {
   children: JSX.Element | JSX.Element[];
@@ -34,6 +35,7 @@ function Layout({ children }: ILayoutProp) {
         </div>
       </header>
       {children}
+      <ForceSignin />
     </div>
   );
 }
