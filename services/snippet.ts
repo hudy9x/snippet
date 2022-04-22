@@ -26,6 +26,7 @@ export const getSnippets = async (): Promise<ISnippet[]> => {
         images: data.images,
         tags: data.tags,
         uid: data.uid,
+        view: data.view,
       });
     });
 
@@ -42,6 +43,8 @@ export const addSnippet = async ({ title, tags, uid, images }: ISnippet) => {
       tags: tags,
       uid,
       images,
+      view: 0,
+      like: 0,
     });
     return docRef;
   } catch (e) {

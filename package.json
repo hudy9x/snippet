@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@logtail/node": "^0.1.10",
     "firebase": "^9.6.11",
     "firebase-admin": "^10.0.2",
     "formik": "^2.2.9",

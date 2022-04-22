@@ -1,21 +1,40 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import "../../../libs/firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
+import { ISnippet } from "../../../services/snippet";
+import { logtail } from "../../../libs/log";
 
 interface ISnippetCounter {
-  [key: string]: number;
+  [key: string]: {
+    viewIds: string[];
+    totalView: number;
+  };
 }
 
 type FirebaseDoc =
   FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>;
 
+function log(content: string) {
+  console.log(content);
+  logtail.info(content);
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  if (req.method !== "POST") {
+    res.status(500).json({ message: "POST method required" });
+    return;
+  }
+
+  const { authorization } = req.headers;
+  if (authorization !== `Bearer ${process.env.API_SECRET_KEY}`) {
+    res.status(500).json({ message: "Authentication errors" });
+    return;
+  }
+
   const firestore = getFirestore();
-  const doc = firestore.doc;
-  const runTransaction = firestore.runTransaction;
   const viewRef = firestore
     .collection("views")
     .where("done", "==", false)
@@ -24,52 +43,79 @@ export default async function handler(
   viewRef
     .get()
     .then(async (snapshot) => {
-      const counter: ISnippetCounter = {};
+      const groupSnippets: ISnippetCounter = {};
       const snippets: string[] = [];
+
+      if (snapshot.empty) {
+        log("No views available");
+        res.status(200).json({ message: "No views available" });
+        return;
+      }
 
       snapshot.forEach((d) => {
         const data = d.data();
         const snippetId = data.snippetId;
 
-        if (!counter[snippetId]) {
+        if (!groupSnippets[snippetId]) {
           snippets.push(snippetId);
-          counter[snippetId] = 0;
+          groupSnippets[snippetId] = {
+            viewIds: [],
+            totalView: 0,
+          };
         }
-        counter[snippetId] += 1;
+
+        groupSnippets[snippetId].totalView += 1;
+        groupSnippets[snippetId].viewIds.push(d.id);
       });
 
-      // console.log("counter", counter);
-      // console.log("snippets", snippets);
+      const total = snippets.length;
+      snippets.forEach(async (snippet, index) => {
+        try {
+          await firestore.runTransaction(async (transaction) => {
+            log(`=> ${index + 1}/${total} Update view of snippets/${snippet}`);
 
-      try {
-        await runTransaction(async (transaction) => {
-          const dt = await transaction.get(doc("views/6LZig56RsFoiyyoiNIYJ"));
-          console.log(dt.data());
-        });
-      } catch (error) {
-        console.log(error);
-      }
+            const groupSnippetItem = groupSnippets[snippet];
+            const snippetRef = await transaction.get(
+              firestore.doc(`snippets/${snippet}`)
+            );
 
-      res.status(200).json({ method: "GET", success: true });
+            if (!snippetRef.exists) {
+              // throw `Document snippets/${snippet} does not exist!`;
+              log(`Document snippets/${snippet} does not exist!`);
+              return;
+            }
 
-      // try {
-      //   await runTransaction(async (transaction) => {
-      //     console.log('111')
-      //     // snippets.forEach(async (snippet) => {
-      //     //   console.log('snippet', snippet)
-      //       // const resDoc = await transaction.get(doc("views", snippet));
+            const snippetData = snippetRef.data() as ISnippet;
+            const newTotalView = groupSnippetItem.totalView;
+            const viewIdOfSnippet = groupSnippetItem.viewIds;
+            const oldView = snippetData.view || 0;
 
-      //       // console.log(resDoc.data());
-      //     // });
-      //   });
-      //   res.status(200).json({ method: "GET", success: true });
-      // } catch (error) {
-      //   console.log("error transaction", error);
-      // }
+            log(`Update total view in snippets/${snippet}`);
+
+            transaction.update(snippetRef.ref, {
+              view: newTotalView + oldView,
+            });
+
+            log(`Mark view as done`);
+            viewIdOfSnippet.forEach(async (viewId) => {
+              await transaction.update(firestore.doc(`views/${viewId}`), {
+                done: true,
+              });
+            });
+          });
+        } catch (error) {
+          log(
+            `=> ${index + 1}/${total} Update view of snippets/${snippet} ERROR`
+          );
+        }
+      });
+
+      res.status(200).json({ message: "Success" });
     })
     .then()
     .catch((err) => {
-      res.status(500).json({ method: "GET", code: 500, success: false });
+      log("Get views ERROR");
+      res.status(500).json({ message: err });
     });
 
   // if (req.method === "POST") {

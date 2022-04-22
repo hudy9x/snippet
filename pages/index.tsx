@@ -26,29 +26,29 @@ export default function Home({ snippets }: IHomeProps) {
             className="relative snippet-item"
           >
             {/* <ViewDetail data={snippet}> */}
-              <Carousel urls={snippet.images} />
-              <div className="flex items-center justify-between mt-3">
-                <Avatar uid={snippet.uid} />
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1">
-                    <HiHeart className="w-5 h-5 text-gray-400" />
-                    <span className="text-xs">200</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <HiEye className="w-5 h-5 text-gray-400" />
-                    <span className="text-xs">23</span>
-                  </div>
+            <Carousel urls={snippet.images} />
+            <div className="flex items-center justify-between mt-3">
+              <Avatar uid={snippet.uid} />
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1">
+                  <HiHeart className="w-5 h-5 text-gray-400" />
+                  <span className="text-xs">200</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <HiEye className="w-5 h-5 text-gray-400" />
+                  <span className="text-xs">{snippet.view}</span>
                 </div>
               </div>
-              <div className="absolute bottom-14 right-3">
-                {snippet.tags.map((tag) => {
-                  return (
-                    <span className="snippet-tag" key={tag}>
-                      # {tag}
-                    </span>
-                  );
-                })}
-              </div>
+            </div>
+            <div className="absolute bottom-14 right-3">
+              {snippet.tags.map((tag) => {
+                return (
+                  <span className="snippet-tag" key={tag}>
+                    # {tag}
+                  </span>
+                );
+              })}
+            </div>
             {/* </ViewDetail> */}
           </div>
         );
