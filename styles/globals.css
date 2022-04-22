@@ -7,6 +7,10 @@ html {
   @apply bg-gray-50;
 }
 
+.overflow-body-hidden {
+  overflow: hidden;
+}
+
 .logo {
   background: #10cb8d; /* fallback for old browsers */
   background: -webkit-linear-gradient(
@@ -40,4 +44,28 @@ html {
   font-size: 0.6rem;
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
+}
+
+.force-sign-in {
+  @apply fixed top-0 left-0 bg-gray-50 z-20 h-screen w-screen flex items-center justify-center;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 1s ease-in-out;
+}
+
+.force-sign-in.showup {
+  opacity: 1;
+  pointer-events: initial;
+}
+
+.force-sign-in-form {
+  @apply rounded-lg shadow-lg bg-white w-11/12 md:w-96 py-10 md:py-12 px-6 md:px-10 flex flex-col justify-center text-center gap-4;
+  opacity: 0;
+  transform: translateY(100px);
+  transition: all 0.5s 0.5s ease-in-out;
+}
+
+.force-sign-in-form.showup {
+  opacity: 1;
+  transform: translateY(0px);
 }

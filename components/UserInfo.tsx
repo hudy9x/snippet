@@ -23,9 +23,13 @@ export default function UserInfo() {
             </div>
           </div>
         </>
-      ) : (
-        <Link href={"/signin"}>Welcome !</Link>
-      )}
+      ) : null}
+      {checking ? (
+        <div className="inline-block h-6 w-6 bg-gray-200 rounded-full"></div>
+      ) : null}
+      {!checking && !authen ? (
+        <div className="inline-flex justify-center h-6 w-6 bg-gray-200 rounded-full">A</div>
+      ) : null}
     </div>
   );
 }

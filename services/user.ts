@@ -3,11 +3,18 @@ import { db } from "../libs/firebase";
 
 const COLLECTION_NAME = "users";
 
+export enum IUserRole {
+  AUDIENCE = "AUDIENCE",
+  MODERATOR = "MODERATOR",
+  COMPOSER = "COMPOSER",
+  ADMIN = "ADMIN",
+}
 export interface IUser {
   displayName: string;
   email: string;
   uid: string;
   photoURL: string;
+  role?: IUserRole;
 }
 
 export const getUser = async (uid: string): Promise<IUser | null> => {
@@ -31,6 +38,7 @@ export const addUser = async ({ uid, displayName, email, photoURL }: IUser) => {
       displayName,
       email,
       photoURL,
+      role: IUserRole.AUDIENCE,
     });
     return docRef;
   } catch (e) {

@@ -14,7 +14,7 @@ const defaultAuth = {
 export const useAuth = () => {
   const [authen, setAuthen] = useState(defaultAuth);
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setAuthen({
           checking: false,
@@ -28,6 +28,10 @@ export const useAuth = () => {
         setAuthen({ ...defaultAuth, ...{ authen: false, checking: false } });
       }
     });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return authen;
