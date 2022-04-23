@@ -69,3 +69,27 @@ html {
   opacity: 1;
   transform: translateY(0px);
 }
+
+.main-menu {
+  @apply relative cursor-pointer py-4 px-2;
+}
+
+.main-menu-container {
+  @apply divide-y divide-gray-100 text-xs absolute w-52 top-14 right-0 z-10 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.main-menu-container.showup {
+  opacity: 1;
+  pointer-events: initial;
+}
+
+.main-menu-item {
+  @apply text-gray-600 whitespace-nowrap px-4 py-2 cursor-pointer hover:bg-gray-50 flex items-center gap-3;
+}
+
+.main-menu-item.inactive {
+  @apply opacity-60;
+}
