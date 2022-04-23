@@ -19,7 +19,7 @@ export interface ISnippet {
   tags: string[];
   uid: string;
   images: FileData[];
-  like?: number;
+  love?: number;
   view?: number;
   createdAt?: Timestamp;
 }
@@ -38,6 +38,7 @@ export const getSnippets = async (): Promise<ISnippet[]> => {
         tags: data.tags,
         uid: data.uid,
         view: data.view,
+        love: data.love || 0,
       });
     });
 

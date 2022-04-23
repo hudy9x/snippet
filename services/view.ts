@@ -10,7 +10,7 @@ export const setView = async (snippetId: string, uid: string) => {
     const d = doc(db, COLLECTION_NAME, key);
 
     if (getCache(key)) {
-      console.log("cached");
+      // console.log("cached");
       return;
     }
 

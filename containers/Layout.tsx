@@ -1,8 +1,5 @@
 import Link from "next/link";
 import React from "react";
-import { HiOutlineLogout } from "react-icons/hi";
-import UserInfo from "../components/UserInfo";
-import { signOutNow } from "../services/sign";
 import ForceSignin from "./ForceSignin";
 import UserNav from "./UserNav";
 
