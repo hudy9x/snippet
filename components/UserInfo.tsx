@@ -25,7 +25,7 @@ export default function UserInfo() {
         </>
       ) : null}
       {checking ? (
-        <div className="inline-block h-6 w-6 bg-gray-200 rounded-full"></div>
+        <div className="flex items-center h-6 w-6 bg-gray-200 rounded-full"></div>
       ) : null}
       {!checking && !authen ? (
         <div className="inline-flex justify-center h-6 w-6 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full">

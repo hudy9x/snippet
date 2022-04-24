@@ -11,3 +11,8 @@ jobs:
           curl --request POST \
           --url 'https://${{ secrets.API_URL }}/api/cronjob/update-view' \
           --header 'authorization: Bearer ${{ secrets.API_SECRET_KEY }}'
+      - name: Call update-love api
+        run: |
+          curl --request POST \
+          --url 'https://${{ secrets.API_URL }}/api/cronjob/update-love' \
+          --header 'authorization: Bearer ${{ secrets.API_SECRET_KEY }}'
