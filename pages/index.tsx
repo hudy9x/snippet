@@ -13,7 +13,7 @@ export default function Home({ snippets }: IHomeProps) {
   return (
     <div
       style={{ maxWidth: 500 }}
-      className="m-auto flex flex-col gap-6 px-4 py-10"
+      className="m-auto flex flex-col gap-6 px-4 pb-10 pt-20"
     >
       <SnippetList datas={snippets} />
       <ViewTracker />
