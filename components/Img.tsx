@@ -39,6 +39,7 @@ function Img({
 }: IImgProps) {
   return (
     <Image
+      quality={100}
       className={className}
       src={src}
       alt={alt}

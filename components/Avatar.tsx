@@ -27,7 +27,7 @@ export default function Avatar({ uid }: IAvatar) {
 
   return (
     <div className="flex items-center">
-      <div className="inline-block h-8 w-8">
+      <div className="inline-block h-6 w-6">
         {info.photoURL ? (
           <Img
             className="rounded-full"
