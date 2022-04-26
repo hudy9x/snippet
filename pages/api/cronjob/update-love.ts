@@ -31,98 +31,107 @@ export default async function handler(
     return;
   }
 
-  const firestore = getFirestore();
-  const loveRef = firestore
-    .collection("loves")
-    .where("done", "==", false)
-    .limit(500);
+  try {
+    const firestore = getFirestore();
+    const loveRef = firestore
+      .collection("loves")
+      .where("done", "==", false)
+      .limit(500);
 
-  loveRef
-    .get()
-    .then(async (snapshot) => {
-      const groupSnippets: ISnippetLoveCounter = {};
-      const snippets: string[] = [];
+    loveRef
+      .get()
+      .then(async (snapshot) => {
+        const groupSnippets: ISnippetLoveCounter = {};
+        const snippets: string[] = [];
 
-      if (snapshot.empty) {
-        log("No loves available");
-        res.status(200).json({ message: "No loves available" });
-        return;
-      }
-
-      log("Grouping snippet's loveIds + calculating total of love");
-      snapshot.forEach((d) => {
-        const data = d.data();
-        const snippetId = data.snippetId;
-
-        if (!groupSnippets[snippetId]) {
-          snippets.push(snippetId);
-          groupSnippets[snippetId] = {
-            loveIds: [],
-            totalLove: 0,
-          };
+        if (snapshot.empty) {
+          log("No loves available");
+          res.status(200).json({ message: "No loves available" });
+          return;
         }
 
-        groupSnippets[snippetId].totalLove += data.value;
-        groupSnippets[snippetId].loveIds.push(d.id);
-      });
+        log("Grouping snippet's loveIds + calculating total of love");
+        snapshot.forEach((d) => {
+          const data = d.data();
+          const snippetId = data.snippetId;
 
-      const total = snippets.length;
+          if (!groupSnippets[snippetId]) {
+            snippets.push(snippetId);
+            groupSnippets[snippetId] = {
+              loveIds: [],
+              totalLove: 0,
+            };
+          }
 
-      log("Update all love's data to done + update total love into snippet");
-      const snippetPromises = snippets.map(async (snippet, index) => {
-        try {
-          await firestore.runTransaction(async (transaction) => {
-            log(`=> ${index + 1}/${total} Update love of snippets/${snippet}`);
+          groupSnippets[snippetId].totalLove += data.value;
+          groupSnippets[snippetId].loveIds.push(d.id);
+        });
 
-            const groupSnippetItem = groupSnippets[snippet];
-            const snippetRef = await transaction.get(
-              firestore.doc(`snippets/${snippet}`)
-            );
+        const total = snippets.length;
 
-            if (!snippetRef.exists) {
-              // throw `Document snippets/${snippet} does not exist!`;
-              log(`Document snippets/${snippet} does not exist!`);
-              return 0;
-            }
+        log("Update all love's data to done + update total love into snippet");
+        const snippetPromises = snippets.map(async (snippet, index) => {
+          try {
+            await firestore.runTransaction(async (transaction) => {
+              log(
+                `=> ${index + 1}/${total} Update love of snippets/${snippet}`
+              );
 
-            const snippetData = snippetRef.data() as ISnippet;
-            const love = snippetData.love || 0;
-            const newTotalLove = groupSnippetItem.totalLove;
-            const viewIdOfSnippet = groupSnippetItem.loveIds;
-            const oldLove = love >= 0 ? love : 0;
-            const totalLove = newTotalLove + oldLove;
+              const groupSnippetItem = groupSnippets[snippet];
+              const snippetRef = await transaction.get(
+                firestore.doc(`snippets/${snippet}`)
+              );
 
-            log(`Update total view in snippets/${snippet}`);
+              if (!snippetRef.exists) {
+                // throw `Document snippets/${snippet} does not exist!`;
+                log(`Document snippets/${snippet} does not exist!`);
+                return 0;
+              }
 
-            transaction.update(snippetRef.ref, {
-              love: totalLove >= 0 ? totalLove : 0,
-            });
+              const snippetData = snippetRef.data() as ISnippet;
+              const love = snippetData.love || 0;
+              const newTotalLove = groupSnippetItem.totalLove;
+              const viewIdOfSnippet = groupSnippetItem.loveIds;
+              const oldLove = love >= 0 ? love : 0;
+              const totalLove = newTotalLove + oldLove;
 
-            log(`Mark view as done`);
-            const viewUpdatePromises = viewIdOfSnippet.map(async (viewId) => {
-              await transaction.update(firestore.doc(`loves/${viewId}`), {
-                done: true,
+              log(`Update total view in snippets/${snippet}`);
+
+              transaction.update(snippetRef.ref, {
+                love: totalLove >= 0 ? totalLove : 0,
               });
+
+              log(`Mark view as done`);
+              const viewUpdatePromises = viewIdOfSnippet.map(async (viewId) => {
+                await transaction.update(firestore.doc(`loves/${viewId}`), {
+                  done: true,
+                });
+              });
+
+              await Promise.all(viewUpdatePromises);
+              return 1;
             });
+          } catch (error) {
+            log(
+              `=> ${
+                index + 1
+              }/${total} Update view of snippets/${snippet} ERROR`
+            );
+            return 0;
+          }
+        });
 
-            await Promise.all(viewUpdatePromises);
-            return 1;
-          });
-        } catch (error) {
-          log(
-            `=> ${index + 1}/${total} Update view of snippets/${snippet} ERROR`
-          );
-          return 0;
-        }
+        await Promise.all(snippetPromises);
+
+        log("All update done");
+        res.status(200).json({ message: "Success" });
+      })
+      .catch((err) => {
+        log("Get loves ERROR");
+        res.status(500).json({ message: err });
       });
-
-      await Promise.all(snippetPromises);
-
-      log("All update done");
-      res.status(200).json({ message: "Success" });
-    })
-    .catch((err) => {
-      log("Get loves ERROR");
-      res.status(500).json({ message: err });
-    });
+  } catch (error) {
+    console.log(error);
+    log("Error when getting loves data");
+  }
 }
