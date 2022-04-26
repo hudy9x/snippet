@@ -44,11 +44,12 @@ export default async function handler(
       const snippets: string[] = [];
 
       if (snapshot.empty) {
-        log("No views available");
-        res.status(200).json({ message: "No views available" });
+        log("No loves available");
+        res.status(200).json({ message: "No loves available" });
         return;
       }
 
+      log("Grouping snippet's loveIds + calculating total of love");
       snapshot.forEach((d) => {
         const data = d.data();
         const snippetId = data.snippetId;
@@ -67,6 +68,7 @@ export default async function handler(
 
       const total = snippets.length;
 
+      log("Update all love's data to done + update total love into snippet");
       const snippetPromises = snippets.map(async (snippet, index) => {
         try {
           await firestore.runTransaction(async (transaction) => {
@@ -116,10 +118,11 @@ export default async function handler(
 
       await Promise.all(snippetPromises);
 
+      log("All update done");
       res.status(200).json({ message: "Success" });
     })
     .catch((err) => {
-      log("Get views ERROR");
+      log("Get loves ERROR");
       res.status(500).json({ message: err });
     });
 }
