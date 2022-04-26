@@ -10,7 +10,7 @@ interface ILayoutProp {
 function Layout({ children }: ILayoutProp) {
   return (
     <div className="bg-gray-50">
-      <header className="bg-white shadow-md">
+      <header className="bg-white shadow-md fixed w-full z-10">
         <div
           style={{ maxWidth: 500 }}
           className="m-auto px-4 flex items-center justify-between"
