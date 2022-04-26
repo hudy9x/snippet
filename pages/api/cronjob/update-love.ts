@@ -118,7 +118,6 @@ export default async function handler(
 
       res.status(200).json({ message: "Success" });
     })
-    .then()
     .catch((err) => {
       log("Get views ERROR");
       res.status(500).json({ message: err });
