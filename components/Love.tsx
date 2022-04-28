@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { HiHeart } from "react-icons/hi";
 import { TiHeartFullOutline } from "react-icons/ti";
 import { useAuth } from "../hooks/useAuth";
 import { getLoveStatusByUser, loveIt } from "../services/love";
@@ -20,7 +19,6 @@ function Love({ id, amount }: ILoveProps) {
     loveIt(id, uid);
     setLove(!love);
     setCounter(counter + (love ? -1 : 1));
-    console.log(id, uid);
   };
 
   useEffect(() => {
