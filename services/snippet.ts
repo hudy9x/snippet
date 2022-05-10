@@ -9,6 +9,7 @@ import {
   Timestamp,
   QueryDocumentSnapshot,
   startAfter,
+  where,
 } from "firebase/firestore";
 import { nowTimeStamp } from "../helpers/date";
 import { db } from "../libs/firebase";
@@ -65,6 +66,44 @@ export const getSnippets = async (): Promise<ISnippet[]> => {
 
     return snippets;
   } catch (error) {
+    return [];
+  }
+};
+
+export const getSnippetsByTag = async (
+  tagName: string
+): Promise<ISnippet[]> => {
+  try {
+    const q = query(
+      collectionSnippet,
+      where("tags", "array-contains", tagName),
+      orderBy("createdAt", "desc"),
+      limit(LIMIT)
+    );
+
+    const querySnapshot = await getDocs(q);
+    const snippets: ISnippet[] = [];
+
+    if (querySnapshot.empty) {
+      return [];
+    }
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      snippets.push({
+        id: doc.id,
+        title: data.title,
+        images: data.images,
+        tags: data.tags,
+        uid: data.uid,
+        view: data.view,
+        love: data.love || 0,
+      });
+    });
+
+    return snippets;
+  } catch (error) {
+    console.log(error)
     return [];
   }
 };

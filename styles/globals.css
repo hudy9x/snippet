@@ -11,6 +11,14 @@ html {
   overflow: hidden;
 }
 
+.max-width {
+  width: 850px;
+}
+
+.max-content-width {
+  width: 600px;
+}
+
 .logo {
   background: #10cb8d; /* fallback for old browsers */
   background: -webkit-linear-gradient(
